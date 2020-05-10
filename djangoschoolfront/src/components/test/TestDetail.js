@@ -34,7 +34,7 @@ const TestDetail = (props) => {
         setTest(resp.data);
       } catch (error) {
         console.log("getData -> error", error.response.data.detail);
-        history.push("/examenes")
+        history.push("/examenes");
       }
     };
     getData();
@@ -74,13 +74,27 @@ const TestDetail = (props) => {
               </CardContent>
             </CardActionArea>
             <CardActions className="detailCardNote">
-            <Button size="small" color="primary">
-              Felicidades, esta es tu nota
-            </Button>
-            <Typography gutterBottom variant="h6" component="h2">
-              {test.note}
-            </Typography>
-          </CardActions>
+              {test.note || test.note === 0 ? (
+                <>
+                  {" "}
+                  <Button size="small" color="primary">
+                    Felicidades, esta es tu nota
+                  </Button>
+                  <Typography gutterBottom variant="h6" component="h2">
+                    {test.note}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Button size="small" color="primary">
+                    Aun no se ah creado tu nota
+                  </Button>
+                  <Typography gutterBottom variant="h6" component="h2">
+                    #
+                  </Typography>
+                </>
+              )}
+            </CardActions>
           </Card>
         </Grid>
       )}

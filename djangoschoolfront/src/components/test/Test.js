@@ -23,7 +23,7 @@ const Test = ({ data }) => {
   const classes = useStyles();
   return (
     <Grid xs={12} sm={6} item>
-      <Link to={`/examen/${data.id}`} style={{ textDecoration: 'none' }}>
+      <Link to={`/examen/${data.id}`} style={{ textDecoration: "none" }}>
         <Card>
           <CardActionArea>
             <CardMedia
@@ -43,12 +43,26 @@ const Test = ({ data }) => {
             </CardContent>
           </CardActionArea>
           <CardActions className="detailCardNote">
-            <Button size="small" color="primary">
-              Felicidades, esta es tu nota
-            </Button>
-            <Typography gutterBottom variant="h6" component="h2">
-              {data.note}
-            </Typography>
+            {data.note || data.note === 0 ? (
+              <>
+                {" "}
+                <Button size="small" color="primary">
+                  Felicidades, esta es tu nota
+                </Button>
+                <Typography gutterBottom variant="h6" component="h2">
+                  {data.note}
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Button size="small" color="primary">
+                  Aun no se ah creado tu nota
+                </Button>
+                <Typography gutterBottom variant="h6" component="h2">
+                  #
+                </Typography>
+              </>
+            )}
           </CardActions>
         </Card>
       </Link>

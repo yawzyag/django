@@ -83,8 +83,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PersistentDrawerLeft = ({ match, history }) => {
-  const [loading, setLoading] = useState(true);
+const Home = ({ match, history }) => {
+  const [loading, setLoading] = useState(false);
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
@@ -108,24 +108,7 @@ const PersistentDrawerLeft = ({ match, history }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (!token) {
-      history.push("/")
-    }
-    const getValidation = async() => {
-      try {
-        const headers = { 'headers': { 'Authorization': `Token ${token}` } }
-        const url = `${process.env.REACT_APP_API_URL}api/auth/user`;
-        const resp = await axios.get(url, headers)
-        console.log("getValidation -> resp", resp)
-      } catch (error) {
-      console.log("getValidation -> error", error)
-      }
-      finally{
-        setLoading(false)
-      }
-    }
-    getValidation()
+
   }, [])
 
   return (
@@ -186,11 +169,11 @@ const PersistentDrawerLeft = ({ match, history }) => {
       >
         <div className={classes.drawerHeader} />
         <Container maxWidth="sm">
-          {!loading && <Tests />}
+          <h1>Bienvenido</h1>
         </Container>
       </main>
     </div>
   );
 }
 
-export default withRouter(PersistentDrawerLeft)
+export default withRouter(Home)

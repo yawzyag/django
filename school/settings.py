@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    #'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -40,7 +40,17 @@ INSTALLED_APPS = [
     'test',
     'rest_framework',
     'corsheaders',
+    'customuser',
+    'accounts',
+    'knox',
 ]
+
+AUTH_USER_MODEL = 'customuser.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':
+    ('knox.auth.TokenAuthentication',)
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
