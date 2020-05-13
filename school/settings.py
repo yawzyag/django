@@ -93,23 +93,7 @@ WSGI_APPLICATION = 'school.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-        'NAME': 'django',
-
-        'USER': 'yesid',
-
-        'PASSWORD': '154575Q',
-
-        'HOST': 'postgres://sdxujjptacworj:463cce9b34e100e8a692fac81c4facfe598e939a82712077ff24c1c9d228d719@ec2-34-225-82-212.compute-1.amazonaws.com:5432/deum19s06qtgvn',
-
-        'PORT': '5432',
-
-    }
-}
+DATABASES = {'default': dj_database_url.parse('postgres://sdxujjptacworj:463cce9b34e100e8a692fac81c4facfe598e939a82712077ff24c1c9d228d719@ec2-34-225-82-212.compute-1.amazonaws.com:5432/deum19s06qtgvn')}
 
 
 # Password validation
