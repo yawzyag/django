@@ -1,10 +1,10 @@
 from django.db import models
-from customuser.models import User
+from courses.models import Course
 
 # Create your models here.
 
-class Course(models.Model):
+class CurricularSubject(models.Model):
     title = models.CharField(max_length=100)
-    students = models.ManyToManyField(User)
+    #course = models.ManyToManyField(Course)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

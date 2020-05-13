@@ -25,7 +25,7 @@ SECRET_KEY = '8mxfg3hg(ll811o&v4khkc_=9e8z79d_g_y5hd^(k%_n6mbbju'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['aqueous-headland-57176.herokuapp.com', 'localhost']
 
 
 # Application definition
@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'customuser',
     'accounts',
     'knox',
+    'courses',
+    'curricular_subject',
 ]
 
 AUTH_USER_MODEL = 'customuser.User'
@@ -61,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -119,7 +122,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
+TIME_ZONE = 'America/Mexico_City'
 
 TIME_ZONE = 'UTC'
 

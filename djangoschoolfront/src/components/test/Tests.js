@@ -16,14 +16,18 @@ const Tests = () => {
     getData();
   }, []);
   return (
+    <>
+    <h1>Examenes</h1>
     <Grid container
     direction="row"
     justify="space-around"
     alignItems="center" spacing={2}>
+      
       {tests.map((item) => {
         return <Test key={item.id} data={item} />;
       })}
     </Grid>
+    </>
   );
 };
 

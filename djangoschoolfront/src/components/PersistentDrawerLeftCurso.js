@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from 'axios'
+import axios from "axios";
+import { get } from "../utils/axios";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -23,6 +24,7 @@ import Tests from "./test/Tests";
 import { Link, withRouter } from "react-router-dom";
 import Links from "./Links";
 import UserLinks from "./UserLinks";
+import TeacherDashboard from "./teacher";
 
 const drawerWidth = 240;
 
@@ -83,52 +85,73 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Home = ({ match, history }) => {
-  const [loading, setLoading] = useState(false);
+const PersistentDrawerLeftCurso = ({ match, history }) => {
+  const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const theme = useTheme();
-  const[loged, setLoged] = useState();
   const [open, setOpen] = useState(false);
+  const [type, setType] = useState({ id: null, student: null, teacher: null });
+  const [session, setSession] = useState(false);
+  const [data, setData] = useState(false);
+
+  const renderMaterias = () => {
+    return data.map((item) => {
+      return <Typography variant="h6"
+      noWrap>{item.title}</Typography>;
+    });
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
 
   const handelLink = (text) => {
-    if (text === "Iniciar session"){
-      return ("/login")
+    if (text === "Iniciar session") {
+      return "/login";
     }
-    if (text === "Crear cuenta"){
-      return ("/register")
+    if (text === "Crear cuenta") {
+      return "/register";
     }
-    return "#"
-  }
+    return "#";
+  };
 
   const handleDrawerClose = () => {
     setOpen(false);
   };
 
+  const handleCloseSession = async () => {
+    try {
+      const headers = { headers: { Authorization: `Token ${session}` } };
+      const url = `${process.env.REACT_APP_API_URL}api/auth/logout`;
+      await axios.post(url, {}, headers);
+    } catch (error) {
+      console.log("handleCloseSession -> error", error.response.data.detail);
+    } finally {
+      history.push("/");
+    }
+  };
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      setLoged(false)
+      history.push("/");
     }
-    const getValidation = async () => {
+    setSession(token);
+
+    const getType = async () => {
       try {
-        const headers = { headers: { Authorization: `Token ${token}` } };
-        const url = `${process.env.REACT_APP_API_URL}api/auth/user`;
-        await axios.get(url, headers);
-        setLoged(true)
-        history.push("/dasboard")
+        const resp = await get(`api/courses/${match.params.id}`);
+        const resp1 = await get(`api/curricular`);
+        const data = resp1.data.filter((item) =>
+          item.course.includes(resp.data.id)
+        );
+        setData(data);
       } catch (error) {
-        console.log("getValidation -> error", error.response.data.detail);
-        setLoged(false)
-      } finally {
-        setLoading(false);
+        console.log("getType -> error", error);
       }
+      setLoading(false);
     };
-    getValidation()
-  }, [])
+    getType();
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -152,6 +175,16 @@ const Home = ({ match, history }) => {
           <Typography variant="h6" noWrap>
             School
           </Typography>
+          {session && (
+            <Typography
+              onClick={handleCloseSession}
+              style={{ marginLeft: "auto" }}
+              variant="h6"
+              noWrap
+            >
+              Cerrar session
+            </Typography>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -173,10 +206,11 @@ const Home = ({ match, history }) => {
           </IconButton>
         </div>
         <Divider />
-        
         <List>
-          {<Links data={["Iniciar session", "Crear cuenta"]}/>}
+          {<UserLinks data={["Dashboard", "Usuario", "Asignaturas"]} />}
         </List>
+        <Divider />
+        
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -185,12 +219,18 @@ const Home = ({ match, history }) => {
       >
         <div className={classes.drawerHeader} />
         <Container maxWidth="sm">
-          <h1>Bienvenido</h1>
-          {loged === false && <Links data={["Iniciar session", "Crear cuenta"]}/>}
+          {!loading && (
+            <>
+            <Typography variant="h1" noWrap>
+            curso {match.params.id}
+            </Typography>
+              {renderMaterias()}
+            </>
+          )}
         </Container>
       </main>
     </div>
   );
-}
+};
 
-export default withRouter(Home)
+export default withRouter(PersistentDrawerLeftCurso);

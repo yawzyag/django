@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from 'axios'
+import axios from "axios";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -23,6 +23,9 @@ import Tests from "./test/Tests";
 import { Link, withRouter } from "react-router-dom";
 import Links from "./Links";
 import UserLinks from "./UserLinks";
+import TeacherDashboard from "./teacher";
+import Asignaturas from "./asignaturas";
+import Alumns from "./Alumns";
 
 const drawerWidth = 240;
 
@@ -88,45 +91,77 @@ const PersistentDrawerLeft = ({ match, history }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const [type, setType] = useState({ id: null, student: null, teacher: null });
+  const [session, setSession] = useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
 
   const handelLink = (text) => {
-    if (text === "Iniciar session"){
-      return ("/login")
+    if (text === "Iniciar session") {
+      return "/login";
     }
-    if (text === "Crear cuenta"){
-      return ("/register")
+    if (text === "Crear cuenta") {
+      return "/register";
     }
-    return "#"
-  }
+    return "#";
+  };
 
   const handleDrawerClose = () => {
     setOpen(false);
   };
 
+  const handleCloseSession = async () => {
+    try {
+      const headers = { headers: { Authorization: `Token ${session}` } };
+      const url = `${process.env.REACT_APP_API_URL}api/auth/logout`;
+      await axios.post(url, {}, headers);
+    } catch (error) {
+      console.log("handleCloseSession -> error", error.response.data.detail);
+    } finally {
+      history.push("/");
+    }
+  };
   useEffect(() => {
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     if (!token) {
-      history.push("/")
+      history.push("/");
     }
-    const getValidation = async() => {
+    const getValidation = async () => {
       try {
-        const headers = { 'headers': { 'Authorization': `Token ${token}` } }
+        const headers = { headers: { Authorization: `Token ${token}` } };
         const url = `${process.env.REACT_APP_API_URL}api/auth/user`;
-        const resp = await axios.get(url, headers)
-        console.log("getValidation -> resp", resp)
+        await axios.get(url, headers);
       } catch (error) {
-      console.log("getValidation -> error", error)
+        console.log("getValidation -> error", error.response.data.detail);
+        history.push("/");
+      } finally {
+        setLoading(false);
+        setSession(token);
       }
-      finally{
-        setLoading(false)
+    };
+    const getType = async () => {
+      try {
+        const headers = { headers: { Authorization: `Token ${token}` } };
+        const url = `${process.env.REACT_APP_API_URL}api/auth/user_type`;
+        const resp = await axios.get(url, headers);
+        setType({
+          id: resp.data.user,
+          student: resp.data.is_student,
+          teacher: resp.data.is_teach,
+        });
+      } catch (error) {
+        console.log("getValidation -> error", error.response.data.detail);
+        history.push("/");
+      } finally {
+        setLoading(false);
+        setSession(token);
       }
-    }
-    getValidation()
-  }, [])
+    };
+    getType();
+    getValidation();
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -150,6 +185,16 @@ const PersistentDrawerLeft = ({ match, history }) => {
           <Typography variant="h6" noWrap>
             School
           </Typography>
+          {session && (
+            <Typography
+              onClick={handleCloseSession}
+              style={{ marginLeft: "auto" }}
+              variant="h6"
+              noWrap
+            >
+              Cerrar session
+            </Typography>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -172,12 +217,10 @@ const PersistentDrawerLeft = ({ match, history }) => {
         </div>
         <Divider />
         <List>
-          {<UserLinks data={["Examenes", "Usuario", "Asignaturas"]}/>}
+          {<UserLinks data={["Dashboard", "Usuario", "Asignaturas"]} />}
         </List>
         <Divider />
-        <List>
-          {<Links data={["Iniciar session", "Crear cuenta"]}/>}
-        </List>
+        
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -185,12 +228,17 @@ const PersistentDrawerLeft = ({ match, history }) => {
         })}
       >
         <div className={classes.drawerHeader} />
-        <Container maxWidth="sm">
-          {!loading && <Tests />}
-        </Container>
+        <Container maxWidth="sm">{!loading && <>
+
+        {type.student && <Asignaturas />}
+        {type.student && <Alumns />}
+        {type.student && <Tests />}
+        {type.teacher && <TeacherDashboard />}
+        </>
+        }</Container>
       </main>
     </div>
   );
-}
+};
 
-export default withRouter(PersistentDrawerLeft)
+export default withRouter(PersistentDrawerLeft);

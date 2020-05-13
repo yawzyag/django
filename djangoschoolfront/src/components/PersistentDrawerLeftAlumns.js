@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from 'axios'
+import axios from "axios";
+import { get } from "../utils/axios";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
+import ImageIcon from '@material-ui/icons/Image';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -23,6 +27,7 @@ import Tests from "./test/Tests";
 import { Link, withRouter } from "react-router-dom";
 import Links from "./Links";
 import UserLinks from "./UserLinks";
+import TeacherDashboard from "./teacher";
 
 const drawerWidth = 240;
 
@@ -83,52 +88,86 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Home = ({ match, history }) => {
-  const [loading, setLoading] = useState(false);
+let studentsArray = []
+const PersistentDrawerLeftCurso = ({ match, history }) => {
+  const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const theme = useTheme();
-  const[loged, setLoged] = useState();
+  const [students, setStudents] = useState([]);
   const [open, setOpen] = useState(false);
+  const [type, setType] = useState({ id: null, student: null, teacher: null });
+  const [session, setSession] = useState(false);
+  const [data, setData] = useState(false);
+
+  const renderMaterias = () => {
+    return data.map((item) => {
+      return <Typography variant="h6"
+      noWrap>{item.title}</Typography>;
+    });
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
 
   const handelLink = (text) => {
-    if (text === "Iniciar session"){
-      return ("/login")
+    if (text === "Iniciar session") {
+      return "/login";
     }
-    if (text === "Crear cuenta"){
-      return ("/register")
+    if (text === "Crear cuenta") {
+      return "/register";
     }
-    return "#"
-  }
+    return "#";
+  };
 
   const handleDrawerClose = () => {
     setOpen(false);
   };
 
+  const handleCloseSession = async () => {
+    try {
+      const headers = { headers: { Authorization: `Token ${session}` } };
+      const url = `${process.env.REACT_APP_API_URL}api/auth/logout`;
+      await axios.post(url, {}, headers);
+    } catch (error) {
+      console.log("handleCloseSession -> error", error.response.data.detail);
+    } finally {
+      history.push("/");
+    }
+  };
+  const getUser = async (id) => {
+    try {
+      const res = await get(`api/users/${id}`)
+      setStudents([...students, res.data])
+      if (!res.data.email.includes("teac")) studentsArray = [...studentsArray, res.data]
+    } catch (error) {
+      console.log("getUser -> error", error)  
+    }
+  }
   useEffect(() => {
+    studentsArray = []
     const token = localStorage.getItem("token");
     if (!token) {
-      setLoged(false)
+      history.push("/");
     }
-    const getValidation = async () => {
+    setSession(token);
+
+    const getType = async () => {
       try {
-        const headers = { headers: { Authorization: `Token ${token}` } };
-        const url = `${process.env.REACT_APP_API_URL}api/auth/user`;
-        await axios.get(url, headers);
-        setLoged(true)
-        history.push("/dasboard")
+        const resp = await get(`api/courses/3`);
+        
+        setData(resp.data.students);
+        const dataUser = resp.data.students.forEach((item) =>{
+          getUser(item)
+          return ([])
+        });
       } catch (error) {
-        console.log("getValidation -> error", error.response.data.detail);
-        setLoged(false)
-      } finally {
-        setLoading(false);
+        console.log("getType -> error", error);
       }
+      setLoading(false);
     };
-    getValidation()
-  }, [])
+    getType();
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -152,6 +191,16 @@ const Home = ({ match, history }) => {
           <Typography variant="h6" noWrap>
             School
           </Typography>
+          {session && (
+            <Typography
+              onClick={handleCloseSession}
+              style={{ marginLeft: "auto" }}
+              variant="h6"
+              noWrap
+            >
+              Cerrar session
+            </Typography>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -173,10 +222,11 @@ const Home = ({ match, history }) => {
           </IconButton>
         </div>
         <Divider />
-        
         <List>
-          {<Links data={["Iniciar session", "Crear cuenta"]}/>}
+          {<UserLinks data={["Dashboard", "Usuario", "Asignaturas"]} />}
         </List>
+        <Divider />
+        
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -185,12 +235,31 @@ const Home = ({ match, history }) => {
       >
         <div className={classes.drawerHeader} />
         <Container maxWidth="sm">
-          <h1>Bienvenido</h1>
-          {loged === false && <Links data={["Iniciar session", "Crear cuenta"]}/>}
+        <p
+          className="arrowBack"
+          onClick={() => {
+            history.goBack();
+          }}
+        ><ChevronLeftIcon /> atras
+        </p>
+          <h1>Lista de alumnos</h1>
+          {studentsArray.map((item) => {
+            return (<div>
+            <ListItem>
+              <ListItemAvatar>
+                <Avatar>
+                  <img src={`https://source.unsplash.com/random?user${item.id}`} alt="avatar"></img>
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary="Nombre" secondary={item.name} />
+              <ListItemText primary="Email" secondary={item.email} />
+            </ListItem>
+            </div>)
+          })}
         </Container>
       </main>
     </div>
   );
-}
+};
 
-export default withRouter(Home)
+export default withRouter(PersistentDrawerLeftCurso);

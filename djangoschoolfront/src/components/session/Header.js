@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Header = () => {
     return (
         <div className="headerContainer">
-            <Link to="/examenes" style={{ textDecoration: 'none' }}>
+            <Link to="/dashboard" style={{ textDecoration: 'none' }}>
             <HomeIcon/>
             <p>Inicio</p>
             </Link>

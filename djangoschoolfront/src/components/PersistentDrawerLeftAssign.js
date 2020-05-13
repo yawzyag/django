@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from 'axios'
+import React from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -20,9 +19,11 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import Tests from "./test/Tests";
-import { Link, withRouter } from "react-router-dom";
+import TestDetail from "./test/TestDetail";
+import { Link } from "react-router-dom";
 import Links from "./Links";
 import UserLinks from "./UserLinks";
+import AssignDetail from "./asignaturas/AssignDetail";
 
 const drawerWidth = 240;
 
@@ -83,52 +84,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Home = ({ match, history }) => {
-  const [loading, setLoading] = useState(false);
+export default function PersistentDrawerLeftAssign({ match }) {
   const classes = useStyles();
   const theme = useTheme();
-  const[loged, setLoged] = useState();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
 
-  const handelLink = (text) => {
-    if (text === "Iniciar session"){
-      return ("/login")
-    }
-    if (text === "Crear cuenta"){
-      return ("/register")
-    }
-    return "#"
-  }
-
   const handleDrawerClose = () => {
     setOpen(false);
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoged(false)
+  const handelLink = (text) => {
+    if (text === "Iniciar session") {
+      return "/login";
     }
-    const getValidation = async () => {
-      try {
-        const headers = { headers: { Authorization: `Token ${token}` } };
-        const url = `${process.env.REACT_APP_API_URL}api/auth/user`;
-        await axios.get(url, headers);
-        setLoged(true)
-        history.push("/dasboard")
-      } catch (error) {
-        console.log("getValidation -> error", error.response.data.detail);
-        setLoged(false)
-      } finally {
-        setLoading(false);
-      }
-    };
-    getValidation()
-  }, [])
+    if (text === "Crear cuenta") {
+      return "/register";
+    }
+    return "#";
+  };
 
   return (
     <div className={classes.root}>
@@ -173,9 +150,12 @@ const Home = ({ match, history }) => {
           </IconButton>
         </div>
         <Divider />
-        
         <List>
-          {<Links data={["Iniciar session", "Crear cuenta"]}/>}
+         {<UserLinks data={["Dashboard", "Usuario", "Asignaturas"]}/>}
+        </List>
+        <Divider />
+        <List>
+            
         </List>
       </Drawer>
       <main
@@ -185,12 +165,9 @@ const Home = ({ match, history }) => {
       >
         <div className={classes.drawerHeader} />
         <Container maxWidth="sm">
-          <h1>Bienvenido</h1>
-          {loged === false && <Links data={["Iniciar session", "Crear cuenta"]}/>}
+          <AssignDetail id={match.params.id} />
         </Container>
       </main>
     </div>
   );
 }
-
-export default withRouter(Home)

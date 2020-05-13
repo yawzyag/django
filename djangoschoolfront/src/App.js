@@ -8,6 +8,7 @@ import { AccessAlarm, ThreeDRotation } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import PersistentDrawerLeft from "./components/PersistentDrawerLeft";
+import PersistentDrawerCurso from "./components/PersistentDrawerLeftCurso";
 import Home from "./components/Home";
 import {
   BrowserRouter as Router,
@@ -19,6 +20,8 @@ import {
 } from "react-router-dom";
 import TestDetail from "./components/test/TestDetail";
 import PersistentDrawerLeftExam from "./components/PersistentDrawerLeftExam";
+import PersistentDrawerLeftAssign from "./components/PersistentDrawerLeftAssign";
+import PersistentDrawerLeftAlumns from "./components/PersistentDrawerLeftAlumns";
 
 function App() {
   return (
@@ -42,12 +45,19 @@ function App() {
         */}
           <Switch>
             <Route exact path="/" component={Home}></Route>
-            <Route path="/examenes" component={PersistentDrawerLeft}></Route>
+            <Route path="/dashboard" component={PersistentDrawerLeft}></Route>
             <Route exact path="/login" component={Login}></Route>
             <Route exact path="/register" component={Register}></Route>
+            <Route path="/curso/:id" component={PersistentDrawerCurso}></Route>
             <Route
               path="/examen/:id"
               component={PersistentDrawerLeftExam}
+            ></Route>
+            <Route path="/alumnos" component={PersistentDrawerLeftAlumns}></Route>
+            
+            <Route
+              path="/asignatura/:id"
+              component={PersistentDrawerLeftAssign}
             ></Route>
             <Route path="*">
               <Redirect to="/" />

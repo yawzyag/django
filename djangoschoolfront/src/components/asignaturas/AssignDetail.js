@@ -22,18 +22,22 @@ const useStyles = makeStyles({
   },
 });
 
-const TestDetail = (props) => {
+const AssignDetail = (props) => {
   const [test, setTest] = useState();
+  const [user, setUser] = useState();
   const { match, id, history } = props;
   const classes = useStyles();
   useEffect(() => {
     const getData = async () => {
       try {
-        const url = `${process.env.REACT_APP_API_URL}api/tests/${parseInt(id)}`;
+        const url = `${process.env.REACT_APP_API_URL}api/curricular/${parseInt(id)}`;
         const resp = await axios.get(url);
         setTest(resp.data);
+        const url1 = `${process.env.REACT_APP_API_URL}api/users/${parseInt(resp.data.teacher)}`;
+        const resp1 = await axios.get(url1);
+        setUser(resp1.data)
       } catch (error) {
-        console.log("getData -> error", error.response.data.detail);
+        if (error?.response?.data?.detail)console.log("getData -> error", error.response.data.detail);
         history.push("/dashboard");
       }
     };
@@ -74,26 +78,28 @@ const TestDetail = (props) => {
               </CardContent>
             </CardActionArea>
             <CardActions className="detailCardNote">
-              {test.note || test.note === 0 ? (
-                <>
-                  {" "}
+              {user &&
+              <>
                   <Button size="small" color="primary">
-                    Felicidades, esta es tu nota
+                    {user.name}
                   </Button>
                   <Typography gutterBottom variant="h6" component="h2">
-                    {test.note}
+                    {user.email}
                   </Typography>
-                </>
-              ) : (
-                <>
-                  <Button size="small" color="primary">
-                    Aun no se ah creado tu nota
+            </>
+              }
+            </CardActions>
+            <CardActions className="detailCardNote">
+              {user &&
+              <>
+                  <Button color="primary">
+                    nombre
                   </Button>
-                  <Typography gutterBottom variant="h6" component="h2">
-                    #
+                  <Typography gutterBottom variant="h4" component="h2">
+                    Email
                   </Typography>
-                </>
-              )}
+            </>
+              }
             </CardActions>
           </Card>
         </Grid>
@@ -102,4 +108,4 @@ const TestDetail = (props) => {
   );
 };
 
-export default withRouter(TestDetail);
+export default withRouter(AssignDetail);

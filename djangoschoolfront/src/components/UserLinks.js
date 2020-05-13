@@ -8,8 +8,8 @@ import { Link } from "react-router-dom";
 
 const UserLinks = ({ data }) => {
     const handelLink = (text) => {
-        if (text === "Examenes") {
-          return "/examenes";
+        if (text === "Dashboard") {
+          return "/dashboard";
         }
         return "#";
       };

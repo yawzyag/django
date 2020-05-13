@@ -150,12 +150,10 @@ export default function PersistentDrawerLeftExam({ match }) {
         </div>
         <Divider />
         <List>
-         {<UserLinks data={["Examenes", "Usuario", "Asignaturas"]}/>}
+         {<UserLinks data={["Dashboard", "Usuario", "Asignaturas"]}/>}
         </List>
         <Divider />
-        <List>
-            {<Links data={["Iniciar session", "Crear cuenta"]}/>}
-        </List>
+       
       </Drawer>
       <main
         className={clsx(classes.content, {

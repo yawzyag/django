@@ -18,5 +18,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('', include('test.urls')),
+    path('', include('customuser.urls')),
+    path('', include('courses.urls')),
     path('', include('accounts.urls')),
+    path('', include('curricular_subject.urls')),
 ]
