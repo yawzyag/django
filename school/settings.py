@@ -94,10 +94,21 @@ WSGI_APPLICATION = 'school.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:////{0}'.format(
-            os.path.join(BASE_DIR, 'db.sqlite3'))
-    )
+    'default': {
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+        'NAME': 'django',
+
+        'USER': 'yesid',
+
+        'PASSWORD': '154575Q',
+
+        'HOST': 'localhost',
+
+        'PORT': '5432',
+
+    }
 }
 
 
