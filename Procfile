@@ -1,1 +1,1 @@
-web: gunicorn SchoolDjango.wsgi --log-file -
+web: gunicorn school.wsgi --preload --log-file -
