@@ -88,13 +88,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
+let studentsArray = []
 const PersistentDrawerLeftCurso = ({ match, history }) => {
-  let studentsArray = []
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
   const theme = useTheme();
-  const [students, setStudents] = useState(studentsArray);
+  const [students, setStudents] = useState([]);
   const [open, setOpen] = useState(false);
   const [type, setType] = useState({ id: null, student: null, teacher: null });
   const [session, setSession] = useState(false);
@@ -140,10 +139,7 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
     try {
       const res = await get(`api/users/${id}`)
       setStudents([...students, res.data])
-      const resp1 = await get(`api/auth/user_type`)
-      console.log("getUser -> resp1", resp1)
-      
-      studentsArray = [...studentsArray, res.data]
+      if (!res.data.email.includes("teac")) studentsArray = [...studentsArray, res.data]
     } catch (error) {
       console.log("getUser -> error", error)  
     }
@@ -158,7 +154,7 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
 
     const getType = async () => {
       try {
-        const resp = await get(`api/courses/1`);
+        const resp = await get(`api/courses/3`);
         
         setData(resp.data.students);
         const dataUser = resp.data.students.forEach((item) =>{
@@ -247,7 +243,7 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
         ><ChevronLeftIcon /> atras
         </p>
           <h1>Lista de alumnos</h1>
-          {students.map((item) => {
+          {studentsArray.map((item) => {
             return (<div>
             <ListItem>
               <ListItemAvatar>
