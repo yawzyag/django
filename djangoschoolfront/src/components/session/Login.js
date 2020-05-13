@@ -75,6 +75,7 @@ const SignInSide = ({ history }) => {
       };
       const url = `${process.env.REACT_APP_API_URL}api/auth/login`;
       const resp = await Axios.post(url, data);
+      localStorage.clear();
       localStorage.setItem("token", resp.data.token);
       history.push("/dashboard");
     } catch (error) {

@@ -124,6 +124,7 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
       const headers = { headers: { Authorization: `Token ${session}` } };
       const url = `${process.env.REACT_APP_API_URL}api/auth/logout`;
       await axios.post(url, {}, headers);
+      localStorage.clear()
     } catch (error) {
       console.log("handleCloseSession -> error", error.response.data.detail);
     } finally {
@@ -178,7 +179,7 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
           {session && (
             <Typography
               onClick={handleCloseSession}
-              style={{ marginLeft: "auto" }}
+              style={{ marginLeft: "auto", cursor: "pointer" }}
               variant="h6"
               noWrap
             >

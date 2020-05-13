@@ -129,21 +129,14 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
       const headers = { headers: { Authorization: `Token ${session}` } };
       const url = `${process.env.REACT_APP_API_URL}api/auth/logout`;
       await axios.post(url, {}, headers);
+      localStorage.clear()
     } catch (error) {
       console.log("handleCloseSession -> error", error.response.data.detail);
     } finally {
       history.push("/");
     }
   };
-  const getUser = async (id) => {
-    try {
-      const res = await get(`api/users/${id}`)
-      setStudents([...students, res.data])
-      if (!res.data.email.includes("teac")) studentsArray = [...studentsArray, res.data]
-    } catch (error) {
-      console.log("getUser -> error", error)  
-    }
-  }
+
   useEffect(() => {
     studentsArray = []
     const token = localStorage.getItem("token");
@@ -151,10 +144,19 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
       history.push("/");
     }
     setSession(token);
+    const getUser = async (id) => {
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}api/users/${id}`)
+        setStudents([...students, res.data])
+        if (!res.data.email.includes("teac")) studentsArray = [...studentsArray, res.data]
+      } catch (error) {
+        console.log("getUser -> error", error)  
+      }
+    }
 
     const getType = async () => {
       try {
-        const resp = await get(`api/courses/3`);
+        const resp = await axios.get(`${process.env.REACT_APP_API_URL}api/courses/3`);
         
         setData(resp.data.students);
         const dataUser = resp.data.students.forEach((item) =>{
@@ -194,7 +196,7 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
           {session && (
             <Typography
               onClick={handleCloseSession}
-              style={{ marginLeft: "auto" }}
+              style={{ marginLeft: "auto", cursor: "pointer" }}
               variant="h6"
               noWrap
             >
@@ -244,7 +246,7 @@ const PersistentDrawerLeftCurso = ({ match, history }) => {
         </p>
           <h1>Lista de alumnos</h1>
           {studentsArray.map((item) => {
-            return (<div>
+            return (<div key={item.id}>
             <ListItem>
               <ListItemAvatar>
                 <Avatar>

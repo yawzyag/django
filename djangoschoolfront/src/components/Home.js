@@ -110,6 +110,10 @@ const Home = ({ match, history }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    if (token) {
+      history.push("/dasboard")
+      return
+    }
     if (!token) {
       setLoged(false)
     }
@@ -120,6 +124,7 @@ const Home = ({ match, history }) => {
         await axios.get(url, headers);
         setLoged(true)
         history.push("/dasboard")
+        return
       } catch (error) {
         console.log("getValidation -> error", error.response.data.detail);
         setLoged(false)
